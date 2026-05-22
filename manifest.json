@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Quipper Study Helper",
+  "description": "Reads visible question text and provides study hints and choice explanations without selecting answers.",
+  "version": "0.1.0",
+  "action": {
+    "default_title": "Study Helper"
+  },
+  "side_panel": {
+    "default_path": "popup.html"
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "permissions": [
+    "activeTab",
+    "scripting",
+    "storage",
+    "sidePanel",
+    "tabs"
+  ],
+  "host_permissions": [
+    "https://*.quipper.com/*",
+    "http://localhost:8787/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": [
+        "https://*.quipper.com/*"
+      ],
+      "js": [
+        "content.js"
+      ],
+      "run_at": "document_idle"
+    }
+  ]
+}

@@ -1,0 +1,13 @@
+{
+  "name": "quipper-study-helper",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Chrome study helper extension with a local OpenAI-backed tutor server.",
+  "scripts": {
+    "server": "node server/index.js",
+    "check": "node --check server/index.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
