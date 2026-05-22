@@ -16,14 +16,17 @@ Owns Chrome side-panel startup behavior. It should stay small and only handle ex
 
 ### `src/popup/`
 
-Owns side-panel interaction:
+Owns side-panel interaction. Files are split by responsibility:
 
-- locating the Quipper tab
-- sending extraction messages
-- restoring the last extracted text
-- validating required text or reasoning
-- building safe study prompts
-- copying text to the clipboard
+- `popup.html` and `popup.css` define the side-panel UI.
+- `popup.js` wires events and coordinates the workflow.
+- `tab-targeting.js` locates the active or nearest Quipper tab.
+- `content-scripts.js` lists the ordered content scripts to inject.
+- `extraction-client.js` sends extraction messages to the Quipper tab.
+- `prompt-builder.js` builds safe study and verification prompts.
+- `storage.js` persists and clears the last extracted question.
+- `status.js` owns short user-facing status messages.
+- `ui-state.js` enables and disables controls based on text and reasoning state.
 
 It should not parse Quipper page DOM directly.
 
@@ -54,8 +57,10 @@ Runs the content script in a small VM-backed Chrome-message fixture. Add cases h
 - `src/background/` contains extension-level Chrome event wiring.
 - `src/content/` contains Quipper page extraction code.
 - `src/popup/` contains the side-panel HTML, CSS, and interaction code.
+- `src/shared/` contains constants shared by popup and content scripts.
 - `tests/` contains Node-based behavior checks.
 - `docs/` contains project architecture notes.
+- `docs/QA.md` contains the manual cross-device QA checklist.
 
 ## Device Consistency
 

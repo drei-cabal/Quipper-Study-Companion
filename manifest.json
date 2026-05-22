@@ -28,6 +28,7 @@
         "https://*.quipper.com/*"
       ],
       "js": [
+        "src/shared/messages.js",
         "src/content/text-utils.js",
         "src/content/dom-blocks.js",
         "src/content/layout-extractors.js",

@@ -9,8 +9,9 @@ It is a prompt-preparation tool, not an answer selector. It should help the stud
 ## Runtime Shape
 
 - `manifest.json` declares the Chrome extension permissions and points Chrome to files under `src/`.
+- `src/shared/messages.js` defines message constants used by popup and content contexts.
 - `src/background/background.js` opens the Chrome side panel from the extension action.
-- `src/popup/popup.html`, `src/popup/popup.css`, and `src/popup/popup.js` own the side-panel UI, copied prompt actions, and Chrome tab messaging.
+- `src/popup/` owns side-panel UI, tab targeting, extraction messaging, prompt building, storage, status, and button state.
 - `src/content/` owns Quipper page extraction. `content.js` handles Chrome messages, `text-utils.js` normalizes text, `dom-blocks.js` reads visible blocks, and `layout-extractors.js` contains Quipper layout rules.
 - `tests/content-extraction.test.js` protects extraction behavior for short-answer pages and selected text.
 

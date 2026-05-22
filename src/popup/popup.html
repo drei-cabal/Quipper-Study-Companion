@@ -21,6 +21,7 @@
       <div class="fieldActions" aria-label="Detected text actions">
         <button id="copyRawText" title="Copy detected text only" aria-label="Copy detected text only">Copy raw</button>
         <button id="copyVerifyPrompt" title="Copy verification prompt" aria-label="Copy verification prompt">Copy verify prompt</button>
+        <button id="clearText" title="Clear detected text and reasoning" aria-label="Clear detected text and reasoning">Clear</button>
       </div>
 
       <label class="fieldLabel" for="reasoningText">Your attempt or reasoning</label>
@@ -37,6 +38,14 @@
       </section>
     </main>
 
+    <script src="../shared/messages.js"></script>
+    <script src="./content-scripts.js"></script>
+    <script src="./status.js"></script>
+    <script src="./tab-targeting.js"></script>
+    <script src="./extraction-client.js"></script>
+    <script src="./prompt-builder.js"></script>
+    <script src="./storage.js"></script>
+    <script src="./ui-state.js"></script>
     <script src="./popup.js"></script>
   </body>
 </html>

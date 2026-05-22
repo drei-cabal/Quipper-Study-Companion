@@ -5,6 +5,7 @@ const vm = require("node:vm");
 
 // Load the same ordered content scripts that Chrome runs from manifest.json.
 const contentScripts = [
+  "../shared/messages.js",
   "text-utils.js",
   "dom-blocks.js",
   "layout-extractors.js",
@@ -72,6 +73,7 @@ const shortAnswerPayload = runExtraction([
 assert.match(shortAnswerPayload.text, /Question/);
 assert.match(shortAnswerPayload.text, /change agents in the social sector/);
 assert.match(shortAnswerPayload.text, /Answer format\nShort answer/);
+assert.equal(shortAnswerPayload.questionType, "short_answer");
 
 const multipleChoicePayload = runExtraction([
   "Question",
@@ -86,10 +88,12 @@ const multipleChoicePayload = runExtraction([
 assert.match(multipleChoicePayload.text, /Choices/);
 assert.match(multipleChoicePayload.text, /A\. Social entrepreneurship/);
 assert.match(multipleChoicePayload.text, /B\. Market segmentation/);
+assert.equal(multipleChoicePayload.questionType, "multiple_choice");
 
 const selectedPayload = runExtraction("Question\nIgnored page text", "Selected question text");
 
 assert.equal(selectedPayload.usedSelection, true);
 assert.equal(selectedPayload.text, "Selected question text");
+assert.equal(selectedPayload.questionType, "selected_text");
 
 console.log("content extraction tests passed");
