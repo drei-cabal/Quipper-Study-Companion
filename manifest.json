@@ -7,10 +7,10 @@
     "default_title": "Study Helper"
   },
   "side_panel": {
-    "default_path": "popup.html"
+    "default_path": "src/popup/popup.html"
   },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background/background.js"
   },
   "permissions": [
     "activeTab",
@@ -20,8 +20,7 @@
     "tabs"
   ],
   "host_permissions": [
-    "https://*.quipper.com/*",
-    "http://localhost:8787/*"
+    "https://*.quipper.com/*"
   ],
   "content_scripts": [
     {
@@ -29,7 +28,7 @@
         "https://*.quipper.com/*"
       ],
       "js": [
-        "content.js"
+        "src/content/content.js"
       ],
       "run_at": "document_idle"
     }

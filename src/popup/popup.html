@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Study Helper</title>
+    <link rel="stylesheet" href="./popup.css">
+  </head>
+  <body>
+    <main class="shell">
+      <header class="topbar">
+        <div>
+          <h1>Study Helper</h1>
+          <p id="pageStatus">Ready to read the current page.</p>
+        </div>
+        <button id="readPage" class="iconButton" title="Read visible page text" aria-label="Read visible page text">Read</button>
+      </header>
+
+      <label class="fieldLabel" for="questionText">Detected text</label>
+      <textarea id="questionText" spellcheck="false" placeholder="Read the page, paste text, or select text on the page before clicking read."></textarea>
+      <div class="fieldActions" aria-label="Detected text actions">
+        <button id="copyRawText" title="Copy detected text only" aria-label="Copy detected text only">Copy raw</button>
+        <button id="copyVerifyPrompt" title="Copy verification prompt" aria-label="Copy verification prompt">Copy verify prompt</button>
+      </div>
+
+      <label class="fieldLabel" for="reasoningText">Your attempt or reasoning</label>
+      <textarea id="reasoningText" class="short" placeholder="Optional, but required for reasoning feedback."></textarea>
+
+      <section class="promptActions" aria-label="Study prompt actions">
+        <div class="buttonGrid">
+          <button data-prompt-mode="explain_choices">Copy explain prompt</button>
+          <button data-prompt-mode="hint">Copy hint prompt</button>
+          <button data-prompt-mode="concept">Copy concept prompt</button>
+          <button data-prompt-mode="check_reasoning">Copy reasoning prompt</button>
+          <button data-prompt-mode="practice">Copy practice prompt</button>
+        </div>
+      </section>
+    </main>
+
+    <script src="./popup.js"></script>
+  </body>
+</html>

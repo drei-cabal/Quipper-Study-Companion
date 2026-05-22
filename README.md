@@ -1,6 +1,6 @@
 # Quipper Study Helper
 
-A Chrome extension that reads visible page text and creates ready-to-paste ChatGPT study prompts. It can also use an optional local API server for direct responses.
+A Chrome extension that reads visible page text and creates ready-to-paste ChatGPT study prompts.
 
 ## What it does
 
@@ -9,7 +9,6 @@ A Chrome extension that reads visible page text and creates ready-to-paste ChatG
 - Lets you edit the extracted text before sending it.
 - Creates ChatGPT prompts for choice explanations, hints, concept help, reasoning checks, or similar practice.
 - Works in hybrid mode with ChatGPT Plus and no API key.
-- Optional: direct API mode keeps the OpenAI API key in a local server instead of inside the extension.
 
 ## Setup for hybrid mode
 
@@ -22,21 +21,14 @@ A Chrome extension that reads visible page text and creates ready-to-paste ChatG
 
 No API key or local server is needed for hybrid mode.
 
-## Optional API setup
+## Updating on another device
 
-1. Copy `server/.env.example` to `server/.env`.
-2. Add your `OPENAI_API_KEY`.
-3. Start the local server. Easiest option on Windows:
+1. Pull the latest repo files.
+2. Open `chrome://extensions`.
+3. Click Reload on the `Quipper Study Helper` extension card.
+4. Open a Quipper quiz page and click Read.
 
-   ```powershell
-   .\start-server.cmd
-   ```
-
-   PowerShell option:
-
-   ```powershell
-   .\start-server.ps1
-   ```
+Chrome does not reload unpacked extension code automatically after `git pull`, so step 3 is required on every device after code changes.
 
 ## Usage
 
@@ -47,10 +39,20 @@ No API key or local server is needed for hybrid mode.
 5. Click one of the copy prompt buttons.
 6. Paste the copied prompt into ChatGPT Plus.
 
-For direct API responses, open Optional API mode in the popup and choose an API action.
-
 ## Notes
 
-- The server defaults to `gpt-5.4-mini`; change `OPENAI_MODEL` in `server/.env` if needed.
-- `ENABLE_WEB_SEARCH=true` can be used for source-aware concept verification, but the tutor prompt still blocks final answer selection.
+- Read supports multiple-choice questions and short-answer questions that show `Enter your answer into the box`.
+- If Quipper changes the page layout, select the visible question text first, then click Read.
 - This is intentionally a learning assistant, not an answer selector.
+
+## Project docs
+
+- `CONTEXT.md` explains the project purpose and current architecture decisions.
+- `docs/ARCHITECTURE.md` explains the extension flow and where future fixes should go.
+
+## Folder layout
+
+- `src/background/` contains Chrome extension event wiring.
+- `src/content/` contains Quipper page extraction.
+- `src/popup/` contains the side-panel UI.
+- `tests/` contains extraction behavior tests.

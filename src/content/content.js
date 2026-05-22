@@ -1,6 +1,5 @@
 (() => {
   const MESSAGE_TYPE = "QSH_EXTRACT_TEXT";
-  const RAW_MESSAGE_TYPE = "QSH_EXTRACT_RAW_TEXT";
 
   function isVisible(element) {
     const style = window.getComputedStyle(element);
@@ -38,7 +37,7 @@
   }
 
   function isNoiseText(text) {
-    return /^(Question|Select your answer\.?|Answer|\d+\s+point|Submit Examination|Home|Course List|To-Dos)$/i.test(text) ||
+    return /^(Question|Select your answer\.?|Enter your answer into the box\.?|Answer|\d+\s+point|Submit Examination|Home|Course List|To-Dos)$/i.test(text) ||
       /^Question\s+\d+$/i.test(text) ||
       /^Questions:\s*\d+$/i.test(text);
   }
@@ -263,6 +262,68 @@
     ].join("\n");
   }
 
+  function collectShortAnswerQuestionFromBodyText() {
+    const lines = cleanLines(document.body?.innerText || "");
+    const candidates = [];
+
+    for (let index = 0; index < lines.length; index += 1) {
+      if (!/^Question$/i.test(lines[index])) continue;
+
+      const questionLines = [];
+      let stopIndex = -1;
+
+      // Short-answer Quipper pages use this marker instead of a choice list.
+      for (let scan = index + 1; scan < Math.min(lines.length, index + 14); scan += 1) {
+        const line = lines[scan];
+        if (/^Enter your answer into the box\.?$/i.test(line)) {
+          stopIndex = scan;
+          break;
+        }
+
+        if (!isNoiseText(line)) {
+          questionLines.push(line);
+        }
+      }
+
+      if (stopIndex !== -1 && questionLines.length) {
+        candidates.push({ questionLines });
+      }
+    }
+
+    const candidate = candidates[candidates.length - 1];
+    if (!candidate) return "";
+
+    return [
+      "Question",
+      candidate.questionLines.join("\n"),
+      "",
+      "Answer format",
+      "Short answer"
+    ].join("\n");
+  }
+
+  function collectQuestionOnlyFallback() {
+    const lines = cleanLines(document.body?.innerText || "");
+    const questionIndex = lines.findIndex((line) => /^Question$/i.test(line));
+    if (questionIndex === -1) return "";
+
+    const questionLines = [];
+    for (let scan = questionIndex + 1; scan < Math.min(lines.length, questionIndex + 10); scan += 1) {
+      const line = lines[scan];
+      if (/^(Select your answer\.?|Enter your answer into the box\.?|Answer)$/i.test(line)) break;
+      if (/^\d+\s+point(\s+Answer)?$/i.test(line)) break;
+      if (!isNoiseText(line)) questionLines.push(line);
+    }
+
+    if (!questionLines.length) return "";
+
+    // This keeps Read useful when Quipper changes labels or hides answer controls.
+    return [
+      "Question",
+      questionLines.join("\n")
+    ].join("\n");
+  }
+
   function collectQuestionAndChoices() {
     const blocks = collectTextBlocks();
     const viewportWidth = window.innerWidth || document.documentElement.clientWidth || 1200;
@@ -368,30 +429,16 @@
   }
 
   globalThis.__QSH_MESSAGE_HANDLER__ = (message, _sender, sendResponse) => {
-    if (message?.type === RAW_MESSAGE_TYPE) {
-      sendResponse({
-        title: document.title,
-        url: window.location.href,
-        text: [
-          "BODY INNER TEXT",
-          document.body?.innerText || "",
-          "",
-          "VISIBLE TEXT BLOCKS",
-          collectVisibleText()
-        ].join("\n")
-      });
-
-      return true;
-    }
-
     if (message?.type !== MESSAGE_TYPE) return false;
 
     const selection = cleanText(window.getSelection()?.toString() || "");
     const visibleText = selection ||
       collectQuestionAndChoicesFromBodyText() ||
+      collectShortAnswerQuestionFromBodyText() ||
       collectQuestionAndChoicesFromBroadText() ||
       collectQuestionAndChoicesFromTextFlow() ||
-      collectQuestionAndChoices();
+      collectQuestionAndChoices() ||
+      collectQuestionOnlyFallback();
 
     sendResponse({
       title: document.title,

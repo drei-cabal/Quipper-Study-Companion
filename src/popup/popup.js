@@ -1,18 +1,12 @@
-const SERVER_URL = "http://localhost:8787/api/study";
 const MESSAGE_TYPE = "QSH_EXTRACT_TEXT";
 
 const readPageButton = document.querySelector("#readPage");
 const pageStatus = document.querySelector("#pageStatus");
 const questionText = document.querySelector("#questionText");
 const reasoningText = document.querySelector("#reasoningText");
-const responseText = document.querySelector("#responseText");
 const copyRawTextButton = document.querySelector("#copyRawText");
 const copyVerifyPromptButton = document.querySelector("#copyVerifyPrompt");
-const debugExtractButton = document.querySelector("#debugExtract");
-const copyResponseButton = document.querySelector("#copyResponse");
 const promptButtons = Array.from(document.querySelectorAll("[data-prompt-mode]"));
-const apiButtons = Array.from(document.querySelectorAll("[data-api-mode]"));
-const modeButtons = [...promptButtons, ...apiButtons];
 
 const MODE_INSTRUCTIONS = {
   explain_choices:
@@ -34,7 +28,8 @@ function setStatus(message, isError = false) {
 
 function setLoading(isLoading) {
   readPageButton.disabled = isLoading;
-  modeButtons.forEach((button) => {
+  // Disable prompt buttons while page extraction is running to avoid stale text copies.
+  promptButtons.forEach((button) => {
     button.disabled = isLoading;
   });
 }
@@ -85,24 +80,16 @@ async function sendExtractMessage(tabId) {
   try {
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["content.js"]
+      files: ["src/content/content.js"]
     });
     return await chrome.tabs.sendMessage(tabId, { type: MESSAGE_TYPE });
   } catch (_error) {
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["content.js"]
+      files: ["src/content/content.js"]
     });
     return chrome.tabs.sendMessage(tabId, { type: MESSAGE_TYPE });
   }
-}
-
-async function sendRawExtractMessage(tabId) {
-  await chrome.scripting.executeScript({
-    target: { tabId },
-    files: ["content.js"]
-  });
-  return chrome.tabs.sendMessage(tabId, { type: "QSH_EXTRACT_RAW_TEXT" });
 }
 
 async function readPage() {
@@ -114,7 +101,7 @@ async function readPage() {
     const result = await sendExtractMessage(tab.id);
 
     if (!result?.text) {
-      throw new Error("Could not isolate the question and choices. Select the visible question area, then click Read.");
+      throw new Error("Could not read the visible question. Select the question text, then click Read.");
     }
 
     questionText.value = result.text;
@@ -128,52 +115,6 @@ async function readPage() {
     setStatus(result.usedSelection ? "Read selected text from the Quipper tab." : "Read visible text from the Quipper tab.");
   } catch (error) {
     setStatus(error.message, true);
-  } finally {
-    setLoading(false);
-  }
-}
-
-async function requestStudyHelp(mode) {
-  const text = questionText.value.trim();
-  const reasoning = reasoningText.value.trim();
-
-  if (!text) {
-    setStatus("Add or read question text first.", true);
-    return;
-  }
-
-  if (mode === "check_reasoning" && !reasoning) {
-    setStatus("Add your attempt before checking reasoning.", true);
-    return;
-  }
-
-  setLoading(true);
-  setStatus("Asking the study tutor...");
-  responseText.textContent = "Thinking...";
-
-  try {
-    const response = await fetch(SERVER_URL, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        mode,
-        questionText: text,
-        userReasoning: reasoning
-      })
-    });
-
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      throw new Error(payload.error || `Server returned ${response.status}.`);
-    }
-
-    responseText.textContent = payload.text || "No response returned.";
-    setStatus("Tutor response ready.");
-  } catch (error) {
-    responseText.textContent = "";
-    setStatus(`${error.message} Make sure the local server is running.`, true);
   } finally {
     setLoading(false);
   }
@@ -213,8 +154,7 @@ async function copyChatGptPrompt(mode) {
 
   const prompt = buildChatGptPrompt(mode, text, reasoning);
   await navigator.clipboard.writeText(prompt);
-  responseText.textContent = prompt;
-  setStatus("Copied ChatGPT prompt. Paste it into ChatGPT Plus.");
+  setStatus("Copied Prompt");
 }
 
 async function restoreLastText() {
@@ -251,37 +191,10 @@ copyVerifyPromptButton.addEventListener("click", async () => {
   ].join("\n");
 
   await navigator.clipboard.writeText(prompt);
-  responseText.textContent = prompt;
   setStatus("Copied verification prompt.");
-});
-debugExtractButton.addEventListener("click", async () => {
-  setLoading(true);
-  setStatus("Reading raw page extraction...");
-
-  try {
-    const tab = await getTargetTab();
-    const result = await sendRawExtractMessage(tab.id);
-    responseText.textContent = result?.text || "No raw extraction returned.";
-    await navigator.clipboard.writeText(responseText.textContent);
-    setStatus("Copied debug extraction.");
-  } catch (error) {
-    setStatus(error.message, true);
-  } finally {
-    setLoading(false);
-  }
 });
 promptButtons.forEach((button) => {
   button.addEventListener("click", () => copyChatGptPrompt(button.dataset.promptMode));
-});
-apiButtons.forEach((button) => {
-  button.addEventListener("click", () => requestStudyHelp(button.dataset.apiMode));
-});
-
-copyResponseButton.addEventListener("click", async () => {
-  const text = responseText.textContent.trim();
-  if (!text || text === "No response yet.") return;
-  await navigator.clipboard.writeText(text);
-  setStatus("Copied response.");
 });
 
 restoreLastText();

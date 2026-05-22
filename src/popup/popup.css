@@ -44,7 +44,7 @@ button:disabled {
 
 .shell {
   display: grid;
-  gap: 10px;
+  gap: 9px;
   padding: 14px;
 }
 
@@ -67,8 +67,8 @@ p {
 }
 
 .iconButton {
-  width: 46px;
-  height: 34px;
+  min-width: 54px;
+  height: 38px;
   font-size: 12px;
   line-height: 1;
 }
@@ -76,19 +76,6 @@ p {
 .fieldLabel {
   color: var(--muted);
   font-weight: 700;
-}
-
-.inlineActions {
-  display: flex;
-  gap: 6px;
-  justify-content: flex-end;
-  margin-top: -6px;
-}
-
-.inlineActions button {
-  min-height: 30px;
-  padding: 5px 9px;
-  font-size: 12px;
 }
 
 textarea {
@@ -105,6 +92,17 @@ textarea {
 
 textarea.short {
   min-height: 68px;
+}
+
+.fieldActions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.fieldActions button {
+  min-height: 34px;
+  padding: 7px 10px;
 }
 
 .buttonGrid {
@@ -130,54 +128,11 @@ textarea.short {
   border-color: var(--accent-strong);
 }
 
-.serverPanel {
+.promptActions {
   border: 1px solid var(--line);
   border-radius: 6px;
   background: var(--panel);
-  padding: 8px 9px;
-}
-
-.serverPanel summary {
-  cursor: pointer;
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.serverPanel .buttonGrid {
-  margin-top: 8px;
-}
-
-.responseBox {
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--panel);
-}
-
-.responseHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid var(--line);
-  padding: 7px 9px;
-  color: var(--muted);
-  font-weight: 700;
-}
-
-.responseHeader button {
-  padding: 4px 8px;
-  font-size: 12px;
-}
-
-pre {
-  min-height: 140px;
-  max-height: 280px;
-  overflow: auto;
-  margin: 0;
   padding: 10px;
-  white-space: pre-wrap;
-  word-wrap: break-word;
-  font: 12px/1.5 ui-monospace, SFMono-Regular, Consolas, "Liberation Mono", monospace;
 }
 
 .error {

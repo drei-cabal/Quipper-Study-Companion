@@ -2,10 +2,10 @@
   "name": "quipper-study-helper",
   "version": "0.1.0",
   "private": true,
-  "description": "Chrome study helper extension with a local OpenAI-backed tutor server.",
+  "description": "Chrome study helper extension for copying safe ChatGPT study prompts.",
   "scripts": {
-    "server": "node server/index.js",
-    "check": "node --check server/index.js"
+    "check": "node --check src/background/background.js && node --check src/content/content.js && node --check src/popup/popup.js && node --check tests/content-extraction.test.js",
+    "test": "node tests/content-extraction.test.js"
   },
   "engines": {
     "node": ">=18"
