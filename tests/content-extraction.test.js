@@ -3,8 +3,15 @@ const fs = require("node:fs");
 const path = require("node:path");
 const vm = require("node:vm");
 
-// Load the same content script path that Chrome runs from manifest.json.
-const contentScript = fs.readFileSync(path.join(__dirname, "..", "src", "content", "content.js"), "utf8");
+// Load the same ordered content scripts that Chrome runs from manifest.json.
+const contentScripts = [
+  "text-utils.js",
+  "dom-blocks.js",
+  "layout-extractors.js",
+  "content.js"
+].map((fileName) => {
+  return fs.readFileSync(path.join(__dirname, "..", "src", "content", fileName), "utf8");
+});
 
 function runExtraction(bodyText, selectionText = "") {
   let messageHandler;
@@ -44,7 +51,7 @@ function runExtraction(bodyText, selectionText = "") {
 
   context.globalThis = context;
   vm.createContext(context);
-  vm.runInContext(contentScript, context);
+  contentScripts.forEach((script) => vm.runInContext(script, context));
 
   let payload;
   messageHandler({ type: "QSH_EXTRACT_TEXT" }, {}, (response) => {
@@ -65,6 +72,20 @@ const shortAnswerPayload = runExtraction([
 assert.match(shortAnswerPayload.text, /Question/);
 assert.match(shortAnswerPayload.text, /change agents in the social sector/);
 assert.match(shortAnswerPayload.text, /Answer format\nShort answer/);
+
+const multipleChoicePayload = runExtraction([
+  "Question",
+  "Which term best describes creating social value through new solutions?",
+  "Select your answer",
+  "Social entrepreneurship",
+  "Market segmentation",
+  "Cost accounting",
+  "Answer"
+].join("\n"));
+
+assert.match(multipleChoicePayload.text, /Choices/);
+assert.match(multipleChoicePayload.text, /A\. Social entrepreneurship/);
+assert.match(multipleChoicePayload.text, /B\. Market segmentation/);
 
 const selectedPayload = runExtraction("Question\nIgnored page text", "Selected question text");
 

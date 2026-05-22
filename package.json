@@ -4,7 +4,7 @@
   "private": true,
   "description": "Chrome study helper extension for copying safe ChatGPT study prompts.",
   "scripts": {
-    "check": "node --check src/background/background.js && node --check src/content/content.js && node --check src/popup/popup.js && node --check tests/content-extraction.test.js",
+    "check": "node --check src/background/background.js && node --check src/content/text-utils.js && node --check src/content/dom-blocks.js && node --check src/content/layout-extractors.js && node --check src/content/content.js && node --check src/popup/popup.js && node --check tests/content-extraction.test.js",
     "test": "node tests/content-extraction.test.js"
   },
   "engines": {

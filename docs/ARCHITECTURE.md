@@ -5,7 +5,7 @@
 1. The user opens a Quipper quiz page.
 2. The user opens the Study Helper side panel.
 3. `src/popup/popup.js` finds the active Quipper tab and sends `QSH_EXTRACT_TEXT`.
-4. `src/content/content.js` returns selected text or extracted visible question text.
+4. `src/content/content.js` returns selected text or extracted visible question text from the extractor modules.
 5. `src/popup/popup.js` stores the last extracted text and copies the selected study prompt.
 
 ## Module Responsibilities
@@ -27,16 +27,23 @@ Owns side-panel interaction:
 
 It should not parse Quipper page DOM directly.
 
-### `src/content/content.js`
+### `src/content/`
 
-Owns Quipper page extraction:
+Owns Quipper page extraction. Chrome loads these files in manifest order:
+
+- `text-utils.js` normalizes text, filters noise labels, and formats output.
+- `dom-blocks.js` reads visible DOM text blocks when raw body text is not enough.
+- `layout-extractors.js` contains Quipper layout-specific extraction strategies.
+- `content.js` registers the Chrome message listener and runs the extractors in priority order.
+
+Extractor priority:
 
 - selected text has first priority
 - multiple-choice pages are read from `Question` and `Select your answer`
 - short-answer pages are read from `Question` and `Enter your answer into the box`
 - question-only fallback keeps the extension useful when Quipper layout changes
 
-Quipper layout fixes should usually be added here and covered by `tests/content-extraction.test.js`.
+Quipper layout fixes should usually be added to `layout-extractors.js` and covered by `tests/content-extraction.test.js`.
 
 ### `tests/content-extraction.test.js`
 

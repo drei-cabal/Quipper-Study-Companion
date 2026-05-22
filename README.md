@@ -53,6 +53,6 @@ Chrome does not reload unpacked extension code automatically after `git pull`, s
 ## Folder layout
 
 - `src/background/` contains Chrome extension event wiring.
-- `src/content/` contains Quipper page extraction.
+- `src/content/` contains text utilities, DOM block readers, layout extractors, and the content message handler.
 - `src/popup/` contains the side-panel UI.
 - `tests/` contains extraction behavior tests.

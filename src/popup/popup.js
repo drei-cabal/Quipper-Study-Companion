@@ -7,6 +7,12 @@ const reasoningText = document.querySelector("#reasoningText");
 const copyRawTextButton = document.querySelector("#copyRawText");
 const copyVerifyPromptButton = document.querySelector("#copyVerifyPrompt");
 const promptButtons = Array.from(document.querySelectorAll("[data-prompt-mode]"));
+const CONTENT_SCRIPT_FILES = [
+  "src/content/text-utils.js",
+  "src/content/dom-blocks.js",
+  "src/content/layout-extractors.js",
+  "src/content/content.js"
+];
 
 const MODE_INSTRUCTIONS = {
   explain_choices:
@@ -80,13 +86,13 @@ async function sendExtractMessage(tabId) {
   try {
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["src/content/content.js"]
+      files: CONTENT_SCRIPT_FILES
     });
     return await chrome.tabs.sendMessage(tabId, { type: MESSAGE_TYPE });
   } catch (_error) {
     await chrome.scripting.executeScript({
       target: { tabId },
-      files: ["src/content/content.js"]
+      files: CONTENT_SCRIPT_FILES
     });
     return chrome.tabs.sendMessage(tabId, { type: MESSAGE_TYPE });
   }
