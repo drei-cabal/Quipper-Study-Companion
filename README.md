@@ -49,7 +49,9 @@ Chrome does not reload unpacked extension code automatically after `git pull`, s
 
 - `CONTEXT.md` explains the project purpose and current architecture decisions.
 - `docs/ARCHITECTURE.md` explains the extension flow and where future fixes should go.
+- `docs/INSTALL_UNPACKED.md` explains how students install the GitHub Release ZIP.
 - `docs/QA.md` provides the manual browser checklist before sharing changes.
+- `docs/RELEASE_CONTENTS.md` lists the files needed in a student-ready release ZIP.
 
 ## Folder layout
 
